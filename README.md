@@ -1,0 +1,1 @@
+# SchoolThing
