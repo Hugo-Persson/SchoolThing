@@ -10,7 +10,7 @@ startApp();
 async function startApp() {
     try {
         await mongoose.connect(process.env.MONGOURL);
-        require("./RestAPI")();
+        require("./RestAPI")(mongoose);
     } catch (err) {
         console.log(err);
     }
@@ -18,7 +18,7 @@ async function startApp() {
 
 
 
-async function mongooseTest() {
+/* async function mongooseTest() {
     const {
         Schema,
         model
@@ -30,8 +30,9 @@ async function mongooseTest() {
     });
     const User = model("User", userSchema);
 
+
     console.log(await User.find());
-}
+} */
 
 /* const user = new User({
     name: "Hugo Persson",

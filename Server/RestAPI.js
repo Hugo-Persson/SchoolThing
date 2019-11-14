@@ -1,6 +1,7 @@
 module.exports = () => {
     const express = require("express");
-    const app = express();;
+    const app = express();
+    const mongoose = require("mongoose");
     startExpress();
 
     function startExpress() {
@@ -17,17 +18,62 @@ module.exports = () => {
         User
     } = models;
 
-    app.post("/confirmUser", (req, res) => {
-        try{
-            const {userToken} = req.body;
-            const decodedUser = authentication.decodeJsonToken(userToken);
 
-        }
-        catch(err){
+    app.post("/confirmUser", async (req, res) => {
+        try {
+            const {
+                userToken,
+                verificationCode
+            } = req.body;
+            if (!userToken) {
+                res.json({
+                    error: true,
+                    message: "missing userToken from body"
+                });
+                return;
+            }
+            if (!verificationCode) {
+                res.json({
+                    error: true,
+                    message: "missing verificationCode from body"
+                });
+                return;
+            }
+            const decodedUser = await authentication.decodeJsonToken(userToken);
+            const {
+                name,
+                email
+            } = decodedUser;
+            console.log(decodedUser.verificationCode);
+            console.log(verificationCode);
+            if (verificationCode == decodedUser.verificationCode) {
+                // User has verified email
+                const newUser = new User({
+                    name: name,
+                    email: email,
+                    admin: false
+                });
 
+                await newUser.save();
+                res.json({
+                    error: false,
+                    message: "User added"
+                });
+
+            } else {
+                res.json({
+                    error: true,
+                    message: "Wrong verification code"
+                });
+            }
+        } catch (err) {
+            res.json({
+                error: true,
+                message: err
+            });
         }
     });
-    app.post("/registerCustomer", async (req, res) => {
+    app.post("/registerUser", async (req, res) => {
         console.log("request");
         try {
 
@@ -35,13 +81,27 @@ module.exports = () => {
                 name,
                 email
             } = req.body;
-            const confirmationCode = Math.random()*1000000;
-            const user = {name:name,email:email,confirmationCode:confirmationCode};
-            const token = authentication.createJsonToken(user);
-            res.json({error:false,data:{token:token}});
+            const verificationCode = Math.round(Math.random() * 1000000);
+            const user = {
+                name: name,
+                email: email,
+                verificationCode: verificationCode
+            };
+            console.log(verificationCode);
+            const token = await authentication.createJsonToken(user);
+            res.json({
+                error: false,
+                data: {
+                    token: token
+                },
+                message: "Verify your email"
+            });
         } catch (err) {
             console.log(err);
-            res.json({error:true,error:err});
+            res.json({
+                error: true,
+                message: err
+            });
         }
     });
 
