@@ -10,21 +10,13 @@ startApp();
 async function startApp() {
     try {
         await mongoose.connect(process.env.MONGOURL);
-        const app = startExpress();
-        require("./RestAPI")(app, mongoose);
+        require("./RestAPI")();
     } catch (err) {
         console.log(err);
     }
 }
 
-function startExpress() {
-    const port = process.env.PORT || "8000";
-    const app = express();
 
-    app.listen(port, () => console.log("Port: " + port))
-
-    return app;
-}
 
 async function mongooseTest() {
     const {
