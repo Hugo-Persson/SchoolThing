@@ -73,6 +73,12 @@ module.exports = () => {
             });
         }
     });
+
+    app.post("/login", async (req, res) => {
+        try {
+
+        }
+    });
     app.post("/registerUser", async (req, res) => {
         console.log("request");
         try {
