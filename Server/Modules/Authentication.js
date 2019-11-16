@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 module.exports = {
-    generateHashedPassword: generateHashedPassword,
+    createAuthToken: createAuthToken,
     createJsonToken: createJsonToken,
     decodeJsonToken: decodeJsonToken,
 }
@@ -20,11 +20,18 @@ async function createJsonToken(data) {
 
 
 }
+
+async function createAuthToken(email) {
+    return createJsonToken({
+        email: email
+    });
+}
+
 async function decodeJsonToken(token) {
     return new Promise(async (resolve, reject) => {
         try {
             console.log(token);
-            const decodedToken = await jwt.verify(token, tokenSecret);
+            const decodedToken = jwt.verify(token, tokenSecret);
             resolve(decodedToken);
         } catch (err) {
             reject(err);

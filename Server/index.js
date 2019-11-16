@@ -10,7 +10,7 @@ startApp();
 async function startApp() {
     try {
         await mongoose.connect(process.env.MONGOURL);
-        require("./RestAPI")(mongoose);
+        require("./Modules/RestAPI")(mongoose);
     } catch (err) {
         console.log(err);
     }
